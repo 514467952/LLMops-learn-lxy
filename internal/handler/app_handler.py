@@ -11,6 +11,8 @@ from openai import OpenAI
 
 from internal.schema import CompletionReq
 
+from internal.exception import FailException
+
 
 class AppHandler:
     """应用控制器"""
@@ -40,4 +42,4 @@ class AppHandler:
         return content
 
     def ping(self):
-        return {"ping": "pong"}
+        raise FailException("数据未找到")
