@@ -12,7 +12,7 @@ from internal.exception import CustomException
 from internal.router import Router
 from pkg.response import json, Response, HttpCode
 from flask_sqlalchemy import SQLAlchemy
-
+from internal.model import App
 
 
 class Http(Flask):
@@ -30,6 +30,9 @@ class Http(Flask):
 
         # 4.初始化扩展
         db.init_app(self)
+        with self.app_context():
+            _ = App()
+            db.create_all()
 
         # 5.注册应用路由
         router.register_router(self)
