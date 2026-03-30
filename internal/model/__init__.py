@@ -5,3 +5,7 @@
 @Author :liuxiaoyu
 @File :__init__.py.py
 """
+
+from .app import App
+
+__all__ = ["App"]
