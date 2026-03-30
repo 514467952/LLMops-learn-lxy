@@ -7,6 +7,8 @@
 """
 # 应用默认配置项
 DEFAULT_CONFIG = {
+    # Flask配置
+    "SECRET_KEY": "a-default-secret-key-for-dev",
     # wft配置
     "WTF_CSRF_ENABLED": "False",
     # SQLAlchemy数据库配置
