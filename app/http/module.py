@@ -5,7 +5,7 @@
 @Author : liuxiaoyu
 @File : module.py
 """
-from flask_sqlalchemy import SQLAlchemy
+from pkg.sqlalchemy import SQLAlchemy
 from injector import Module, Binder
 from internal.extension.database_extension import db
 
