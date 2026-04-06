@@ -8,7 +8,7 @@
 import dotenv
 from pkg.sqlalchemy import SQLAlchemy
 from injector import Injector
-
+from flask_migrate import Migrate
 from config import Config
 from internal.router import Router
 from internal.server import Http
@@ -20,7 +20,12 @@ injector = Injector([ExtensionModule])
 
 conf = Config()
 
-app = Http(__name__, db=injector.get(SQLAlchemy), router=injector.get(Router), conf=conf)
+app = Http(
+    __name__,
+    db=injector.get(SQLAlchemy),
+    router=injector.get(Router),
+    migrate=injector.get(Migrate),
+    conf=conf)
 
 if __name__ == '__main__':
     app.run(debug=True)
