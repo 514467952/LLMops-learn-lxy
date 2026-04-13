@@ -8,6 +8,9 @@
 import os
 import uuid
 
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
 from openai import OpenAI
 
 from internal.schema import CompletionReq
@@ -49,22 +52,25 @@ class AppHandler:
         req = CompletionReq()
         if not req.validate():
             return validate_error_json(req.errors)
-        # query = request.json.get("query")
-        client = OpenAI(
+
+        # 2. 提示词模版
+        prompt = ChatPromptTemplate.from_template("{query}")
+
+        # 3. 构建0penAI客户端,并发起请求
+        llm = ChatOpenAI(
             api_key=os.getenv("OPENAI_API_KEY"),
             base_url="https://api.moonshot.cn/v1",
-        )
-        # 2.构建0penAI客户端,并发起请求
-        completion = client.chat.completions.create(
             model="kimi-k2-0905-preview",
-            messages=[
-                {"role": "system",
-                 "content": "你是 Kimi，由 Moonshot AI 提供的人工智能助手，你更擅长中文和英文的对话。你会为用户提供安全，有帮助，准确的回答。同时，你会拒绝一切涉及恐怖主义，种族歧视，黄色暴力等问题的回答。Moonshot AI 为专有名词，不可翻译成其他语言。"},
-                {"role": "user", "content": req.query.data},
-            ]
         )
-        # 3.得到请求响应,然后将0penAI的响应传递给前端
-        content = completion.choices[0].message.content
+
+        # 4. 发起请求
+        ai_message = llm.invoke(prompt.invoke({"query":req.query.data}))
+
+        # 5. 构建输出解析器
+        parser = StrOutputParser()
+
+        # 6. 使用解析器解析模型返回结果
+        content = parser.invoke(ai_message)
         return success_json({"content": content})
 
     def ping(self):

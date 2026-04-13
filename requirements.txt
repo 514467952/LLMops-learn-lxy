@@ -32,3 +32,4 @@ flask-sqlalchemy
 flask-migrate
 langchain-core
 langchain-openai
+langchain
