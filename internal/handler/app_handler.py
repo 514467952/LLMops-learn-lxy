@@ -53,24 +53,24 @@ class AppHandler:
         if not req.validate():
             return validate_error_json(req.errors)
 
-        # 2. 提示词模版
+        # 2. 构建组件
+        # 提示词模版
         prompt = ChatPromptTemplate.from_template("{query}")
-
-        # 3. 构建0penAI客户端,并发起请求
+        # 大语言模型
         llm = ChatOpenAI(
             api_key=os.getenv("OPENAI_API_KEY"),
             base_url="https://api.moonshot.cn/v1",
             model="kimi-k2-0905-preview",
         )
-
-        # 4. 发起请求
-        ai_message = llm.invoke(prompt.invoke({"query":req.query.data}))
-
-        # 5. 构建输出解析器
+        # 输出解析器
         parser = StrOutputParser()
 
-        # 6. 使用解析器解析模型返回结果
-        content = parser.invoke(ai_message)
+        # 3.构建链
+        chain = prompt | llm | parser
+
+        # 4. 调用链得到结果
+        content = chain.invoke({"query":req.query.data})
+
         return success_json({"content": content})
 
     def ping(self):
