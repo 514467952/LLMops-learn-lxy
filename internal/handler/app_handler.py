@@ -12,6 +12,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from openai import OpenAI
+from uuid import UUID
 
 from internal.schema import CompletionReq
 from internal.exception import FailException
@@ -46,6 +47,30 @@ class AppHandler:
         app = self.app_service.delete_app(id)
         return success_message(f"应用已经删除成功,id为{app.id}")
 
+    def debug(self, app_id: UUID):
+        """聊天接口"""
+        # 1.提取从接口中获取的输入，POST
+        req = CompletionReq()
+        if not req.validate():
+            return validate_error_json(req.errors)
+
+        # 2.构建组件
+        prompt = ChatPromptTemplate.from_template("{query}")
+        llm = ChatOpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            base_url="https://api.moonshot.cn/v1",
+            model="kimi-k2.6",
+        )
+        parser = StrOutputParser()
+
+        # 3.构建链
+        chain = prompt | llm | parser
+
+        # 4.调用链得到结果
+        content = chain.invoke({"query": req.query.data})
+        print('生成内容:', content)
+        return success_json({"content": content})
+
     def completion(self):
         """聊天接口"""
         # 1.提取从接口中获取的输入
@@ -60,7 +85,7 @@ class AppHandler:
         llm = ChatOpenAI(
             api_key=os.getenv("OPENAI_API_KEY"),
             base_url="https://api.moonshot.cn/v1",
-            model="kimi-k2-0905-preview",
+            model="kimi-k2.6",
         )
         # 输出解析器
         parser = StrOutputParser()

@@ -33,3 +33,4 @@ flask-migrate
 langchain-core
 langchain-openai
 langchain
+flask-cors
