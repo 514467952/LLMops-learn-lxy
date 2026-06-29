@@ -7,6 +7,7 @@
 """
 import os
 from flask import Flask
+from flask_cors import CORS
 from flask_migrate import Migrate
 from config import Config
 from internal.exception import CustomException
@@ -40,7 +41,14 @@ class Http(Flask):
         db.init_app(self)
         migrate.init_app(self,db,directory="internal/migrate")
 
-        # 5.注册应用路由
+        # 5.解决跨域问题
+        CORS(self, resources={
+            r"/*": {
+                "origins": "*",
+            }
+        })
+
+        # 6.注册应用路由
         router.register_router(self)
 
 
