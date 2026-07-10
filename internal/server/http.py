@@ -44,7 +44,8 @@ class Http(Flask):
         # 5.解决跨域问题
         CORS(self, resources={
             r"/*": {
-                "origins": "*",
+                "origins": "http://localhost:5173",
+                "supports_credentials": True,
             }
         })
 
